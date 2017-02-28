@@ -1,0 +1,4 @@
+**/*.o
+chat-server
+deps/uv/out/
+deps/uv/libuv.a
