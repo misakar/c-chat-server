@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 
 #define SERVER_HOST "0.0.0.0"
 #define SERVER_PORT 3000

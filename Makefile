@@ -1,5 +1,5 @@
 CFLAGS = -Ideps/uv/include -Ideps/uv/src -Wall
-LDFLAGS = -lm
+LDFLAGS = -lm -lpthread
 
 .PHONY: chat-server clean # not associate with a file
 
