@@ -71,6 +71,13 @@ void on_connected(uv_stream_t *server, int status)
   QUEUE_INSERT_TAIL(&userq, &user->node);
   get_user_ip(user);
 
+  char sysmsg[1024] = {0};
+  int cnt = 0;
+  QUEUE *q;
+  QUEUE_FOREACH(q, &userq)
+    { cnt++; }
+  snprintf(sysmsg, sizeof(sysmsg), "\n[online now: %d people]\n\n", cnt);
+  unicast(user, sysmsg);
   broadcast(user, "chat-server > %s joined!\n", user->ip);
 
   uv_read_start((uv_stream_t *)&user->handle, on_alloc, on_read);
@@ -87,11 +94,11 @@ void on_alloc(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf)
 void on_read(uv_stream_t *handle, ssize_t nread, const uv_buf_t *buf)
 {
   struct user_s *user = QUEUE_DATA(handle, struct user_s, handle);
-  if (nread == -1)
+  if (nread < 0)
   {
     // user disconnected
     QUEUE_REMOVE(&user->node);
-    broadcast(user, "%s left the room!\n", user->ip);
+    broadcast(user, "chat-server > %s left the room!\n", user->ip);
     uv_close((uv_handle_t *)&user->handle, on_close);
     return;
   }
@@ -141,7 +148,7 @@ void broadcast(struct user_s *current_user, const char *fmt, ...)
   QUEUE_FOREACH(q, &userq)
   {
     struct user_s *user = QUEUE_DATA(q, struct user_s, node);
-    // if (!strcmp(current_user->ip, user->ip))
+    if (strcmp(current_user->ip, user->ip))
     {
       unicast(user, msg);
     }
