@@ -77,7 +77,9 @@ void on_connected(uv_stream_t *server, int status)
   QUEUE *q;
   QUEUE_FOREACH(q, &userq)
     { cnt++; }
-  snprintf(sysmsg, sizeof(sysmsg), "\n[online now: %d people]\n\n", cnt);
+  snprintf(sysmsg, sizeof(sysmsg), "\n[online now: %d people]\n", cnt);
+  unicast(user, sysmsg);
+  snprintf(sysmsg, sizeof(sysmsg), "[your ip addr: %s]\n\n", user->ip);
   unicast(user, sysmsg);
   broadcast(user, "chat-server > %s joined!\n", user->ip);
 
